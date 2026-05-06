@@ -1,6 +1,7 @@
 import * as XLSX from "xlsx";
 
 export interface ItemRow {
+  [key: string]: string | number;
   name: string;
   category: string;
   quantity: number;
@@ -9,7 +10,7 @@ export interface ItemRow {
   status: string;
 }
 
-const HEADER_MAP: Record<string, keyof ItemRow> = {
+const HEADER_MAP: Record<string, string> = {
   "名称": "name",
   "分类": "category",
   "数量": "quantity",
@@ -18,7 +19,7 @@ const HEADER_MAP: Record<string, keyof ItemRow> = {
   "状态": "status",
 };
 
-const REVERSE_HEADER_MAP: Record<keyof ItemRow, string> = {
+const REVERSE_HEADER_MAP: Record<string, string> = {
   name: "名称",
   category: "分类",
   quantity: "数量",
@@ -47,9 +48,9 @@ export function parseExcelBuffer(buffer: ArrayBuffer): ItemRow[] {
       if (row[cnHeader] !== undefined) {
         const value = row[cnHeader];
         if (enField === "quantity" || enField === "price") {
-          (item as Record<string, unknown>)[enField] = Number(value) || 0;
+          item[enField] = Number(value) || 0;
         } else {
-          (item as Record<string, unknown>)[enField] = String(value);
+          item[enField] = String(value);
         }
       }
     }
@@ -63,7 +64,7 @@ export function buildExcelBuffer(data: ItemRow[]): Buffer {
   const rows = data.map((item) => {
     const row: Record<string, string | number> = {};
     for (const [enField, cnHeader] of Object.entries(REVERSE_HEADER_MAP)) {
-      row[cnHeader] = item[enField as keyof ItemRow];
+      row[cnHeader] = item[enField];
     }
     return row;
   });

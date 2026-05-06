@@ -18,8 +18,9 @@ export async function GET() {
     }));
 
     const buffer = buildExcelBuffer(rows);
+    const uint8Array = new Uint8Array(buffer);
 
-    return new NextResponse(buffer, {
+    return new NextResponse(uint8Array, {
       status: 200,
       headers: {
         "Content-Type":
