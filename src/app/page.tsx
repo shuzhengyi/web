@@ -116,20 +116,30 @@ export default function Home() {
                 {showForm ? "收起表单" : "新增订单"}
               </button>
               <OrderImportButton onImportComplete={fetchOrders} />
-              <div className="relative">
-                <button
-                  id="template-dropdown"
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                >
+              <div className="relative group">
+                <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                   下载模板 ▼
                 </button>
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-                  <div className="py-1">
-                    <a href="/api/orders/import/template?type=template1" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">模板1</a>
-                    <a href="/api/orders/import/template?type=template2" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">模板2</a>
-                    <a href="/api/orders/import/template?type=template3" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">模板3(英文)</a>
-                    <a href="/api/orders/import/template?type=template4" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">模板4(合并单元格)</a>
-                    <div className="border-t border-gray-100 my-1"></div>
+                <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                  <div className="py-2">
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">模板列表</div>
+                    <a href="/api/orders/import/template?type=template1" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                      <span className="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-600 rounded text-xs mr-2">1</span>
+                      模板1 - 标准格式
+                    </a>
+                    <a href="/api/orders/import/template?type=template2" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                      <span className="w-6 h-6 flex items-center justify-center bg-green-100 text-green-600 rounded text-xs mr-2">2</span>
+                      模板2 - 发货人格式
+                    </a>
+                    <a href="/api/orders/import/template?type=template3" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                      <span className="w-6 h-6 flex items-center justify-center bg-purple-100 text-purple-600 rounded text-xs mr-2">3</span>
+                      模板3 - 英文格式
+                    </a>
+                    <a href="/api/orders/import/template?type=template4" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                      <span className="w-6 h-6 flex items-center justify-center bg-orange-100 text-orange-600 rounded text-xs mr-2">4</span>
+                      模板4 - 合并单元格
+                    </a>
+                    <div className="border-t border-gray-100 my-2"></div>
                     <button
                       onClick={async () => {
                         const response = await fetch("/api/orders/import/template", { method: "POST" });
@@ -143,8 +153,9 @@ export default function Home() {
                         window.URL.revokeObjectURL(url);
                         document.body.removeChild(a);
                       }}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
+                      <span className="w-6 h-6 flex items-center justify-center bg-gray-100 text-gray-600 rounded text-xs mr-2">📦</span>
                       下载全部模板
                     </button>
                   </div>

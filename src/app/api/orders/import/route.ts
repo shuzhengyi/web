@@ -157,11 +157,44 @@ export async function POST(request: Request) {
         }
       }
 
-      const requiredFields = ["senderName", "senderPhone", "receiverName", "receiverPhone"];
-      const missingFields = requiredFields.filter(f => !order[f]);
+      const rowErrors: string[] = [];
 
-      if (missingFields.length > 0) {
-        errors.push(`第 ${R + 1} 行：缺少必填字段 ${missingFields.join(", ")}`);
+      if (!order.senderName) {
+        rowErrors.push("发件人姓名不能为空");
+      }
+      if (!order.senderPhone) {
+        rowErrors.push("发件人电话不能为空");
+      }
+      if (!order.senderAddress) {
+        rowErrors.push("发件人地址不能为空");
+      }
+      if (!order.receiverName) {
+        rowErrors.push("收件人姓名不能为空");
+      }
+      if (!order.receiverPhone) {
+        rowErrors.push("收件人电话不能为空");
+      }
+      if (!order.receiverAddress) {
+        rowErrors.push("收件人地址不能为空");
+      }
+      if (!order.goodsWeight || typeof order.goodsWeight !== "number" || order.goodsWeight <= 0) {
+        rowErrors.push("重量必须为正数");
+      }
+      if (!order.goodsPieces || typeof order.goodsPieces !== "number" || order.goodsPieces <= 0 || !Number.isInteger(order.goodsPieces)) {
+        rowErrors.push("件数必须为正整数");
+      }
+      if (!order.goodsType) {
+        rowErrors.push("温层不能为空");
+      } else if (typeof order.goodsType === "string") {
+        const goodsTypeStr = order.goodsType as string;
+        const validTypes = ["常温", "冷藏", "冷冻", "normal", "cold", "frozen"];
+        if (!validTypes.some(t => goodsTypeStr.toLowerCase().includes(t))) {
+          rowErrors.push("温层必须为：常温、冷藏或冷冻");
+        }
+      }
+
+      if (rowErrors.length > 0) {
+        errors.push(`第 ${R + 1} 行：${rowErrors.join("；")}`);
         failCount++;
         continue;
       }
