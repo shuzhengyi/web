@@ -1,14 +1,4 @@
-interface Order {
-  id: number;
-  trackingNumber: string | null;
-  customerOrderNumber: string | null;
-  senderName: string | null;
-  receiverName: string | null;
-  goodsName: string | null;
-  serviceType: string | null;
-  status: string;
-  createdAt: string;
-}
+import { Order } from "@/generated/prisma/client";
 
 interface OrderTableProps {
   orders: Order[];

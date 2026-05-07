@@ -1,47 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { Order } from "@/generated/prisma/client";
 import OrderTable from "@/components/OrderTable";
 import OrderImportButton from "@/components/OrderImportButton";
 import OrderExportButton from "@/components/OrderExportButton";
 import DownloadTemplateButton from "@/components/DownloadTemplateButton";
 import OrderForm from "@/components/OrderForm";
-
-interface Order {
-  id: number;
-  trackingNumber: string | null;
-  customerOrderNumber: string | null;
-  customerCode: string | null;
-  customerName: string | null;
-  senderName: string | null;
-  senderPhone: string | null;
-  senderCompany: string | null;
-  senderProvince: string | null;
-  senderCity: string | null;
-  senderDistrict: string | null;
-  senderAddress: string | null;
-  receiverName: string | null;
-  receiverPhone: string | null;
-  receiverCompany: string | null;
-  receiverProvince: string | null;
-  receiverCity: string | null;
-  receiverDistrict: string | null;
-  receiverAddress: string | null;
-  goodsName: string | null;
-  goodsType: string | null;
-  goodsQuantity: number;
-  goodsWeight: number;
-  goodsVolume: number;
-  goodsPieces: number;
-  serviceType: string | null;
-  paymentType: string | null;
-  collectionAmount: number;
-  insuredAmount: number;
-  remark: string | null;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export default function Home() {
   const [orders, setOrders] = useState<Order[]>([]);
