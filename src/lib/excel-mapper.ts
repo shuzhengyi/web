@@ -12,155 +12,82 @@ export const ORDER_FIELDS: FieldMapping[] = [
   },
   {
     field: "customerOrderNumber",
-    possibleNames: ["客户单号", "客户订单号", "订单号", "orderNo", "orderNumber", "customerOrder", "订单编号"],
-    type: "string"
-  },
-  {
-    field: "customerCode",
-    possibleNames: ["客户编号", "客户代码", "code", "customerCode", "会员编号", "商户编号"],
-    type: "string"
-  },
-  {
-    field: "customerName",
-    possibleNames: ["客户名称", "客户名", "customerName", "客户", "商家名称"],
+    possibleNames: ["客户单号", "客户订单号", "订单号", "orderNo", "orderNumber", "customerOrder", "订单编号", "外部订单号", "外部编码", "refcode", "ref code", "reference"],
     type: "string"
   },
   {
     field: "senderName",
-    possibleNames: ["寄件人", "发件人", "发货人", "sender", "寄件人姓名", "发件人姓名", "fromName", "shipper"],
+    possibleNames: ["寄件人", "发件人", "发货人", "sender", "寄件人姓名", "发件人姓名", "发货人姓名", "fromName", "shipper", "发件方", "发货方"],
     type: "string"
   },
   {
     field: "senderPhone",
-    possibleNames: ["寄件人电话", "寄件人手机", "发件人电话", "发货人电话", "senderPhone", "fromPhone", "寄方电话", "shipperTel"],
-    type: "string"
-  },
-  {
-    field: "senderCompany",
-    possibleNames: ["寄件公司", "发件公司", "发货公司", "senderCompany", "fromCompany", "寄方公司", "shipperCompany"],
-    type: "string"
-  },
-  {
-    field: "senderProvince",
-    possibleNames: ["寄件省份", "发件省份", "发货省份", "senderProvince", "fromProvince", "寄方省份", "senderState", "省"],
-    type: "string"
-  },
-  {
-    field: "senderCity",
-    possibleNames: ["寄件城市", "发件城市", "发货城市", "senderCity", "fromCity", "寄方城市", "市"],
-    type: "string"
-  },
-  {
-    field: "senderDistrict",
-    possibleNames: ["寄件区县", "发件区县", "发货区县", "senderDistrict", "fromDistrict", "寄方区县", "区"],
+    possibleNames: ["寄件人电话", "寄件人手机", "发件人电话", "发货人电话", "senderPhone", "fromPhone", "寄方电话", "shipperTel", "发件电话", "发货电话", "sender tel", "sender telephone"],
     type: "string"
   },
   {
     field: "senderAddress",
-    possibleNames: ["寄件地址", "发件地址", "发货地址", "senderAddress", "fromAddress", "寄方地址", "详细地址", "地址"],
+    possibleNames: ["寄件地址", "发件地址", "发货地址", "senderAddress", "fromAddress", "寄方地址", "详细地址", "地址", "发件人地址", "发货人地址", "sender address"],
     type: "string"
   },
   {
     field: "receiverName",
-    possibleNames: ["收件人", "收货人", "receiver", "receiveName", "toName", "consignee"],
+    possibleNames: ["收件人", "收货人", "receiver", "receiveName", "toName", "consignee", "收件方", "收货方"],
     type: "string"
   },
   {
     field: "receiverPhone",
-    possibleNames: ["收件人电话", "收件人手机", "收货人电话", "receiverPhone", "toPhone", "consigneeTel"],
-    type: "string"
-  },
-  {
-    field: "receiverCompany",
-    possibleNames: ["收件公司", "收货公司", "receiverCompany", "toCompany", "consigneeCompany"],
-    type: "string"
-  },
-  {
-    field: "receiverProvince",
-    possibleNames: ["收件省份", "收货省份", "receiverProvince", "toProvince", "省"],
-    type: "string"
-  },
-  {
-    field: "receiverCity",
-    possibleNames: ["收件城市", "收货城市", "receiverCity", "toCity", "市"],
-    type: "string"
-  },
-  {
-    field: "receiverDistrict",
-    possibleNames: ["收件区县", "收货区县", "receiverDistrict", "toDistrict", "区"],
+    possibleNames: ["收件人电话", "收件人手机", "收货人电话", "receiverPhone", "toPhone", "consigneeTel", "收件电话", "收货电话", "receiver tel", "receiver telephone"],
     type: "string"
   },
   {
     field: "receiverAddress",
-    possibleNames: ["收件地址", "收货地址", "receiverAddress", "toAddress", "详细地址"],
+    possibleNames: ["收件地址", "收货地址", "receiverAddress", "toAddress", "详细地址", "收件人地址", "收货人地址", "receiver address"],
     type: "string"
-  },
-  {
-    field: "goodsName",
-    possibleNames: ["物品名称", "品名", "货物名称", "goodsName", "itemName", "商品名称", "货品名"],
-    type: "string"
-  },
-  {
-    field: "goodsType",
-    possibleNames: ["物品类型", "货物类型", "类型", "goodsType", "itemType", "品类"],
-    type: "string"
-  },
-  {
-    field: "goodsQuantity",
-    possibleNames: ["物品数量", "数量", "goodsQuantity", "quantity", "qty", "件数"],
-    type: "number"
   },
   {
     field: "goodsWeight",
-    possibleNames: ["物品重量", "重量", "weight", "goodsWeight", "kg", "体重"],
+    possibleNames: ["物品重量", "重量", "weight", "goodsWeight", "kg", "体重", "重量(kg)", "weight(kg)", "货物重量"],
     type: "number"
   },
   {
-    field: "goodsVolume",
-    possibleNames: ["物品体积", "体积", "volume", "goodsVolume", "方", "立方米"],
+    field: "goodsQuantity",
+    possibleNames: ["物品数量", "数量", "goodsQuantity", "quantity", "qty", "件数", "数量(件)", "货品数量"],
     type: "number"
   },
   {
     field: "goodsPieces",
-    possibleNames: ["物品件数", "件数", "pieces", "goodsPieces", "箱数", "packageCount"],
+    possibleNames: ["物品件数", "件数", "pieces", "goodsPieces", "箱数", "packageCount", "包装件数"],
     type: "number"
   },
   {
-    field: "serviceType",
-    possibleNames: ["服务类型", "服务", "serviceType", "快递类型", "运输方式", "shippingType"],
+    field: "goodsType",
+    possibleNames: ["物品类型", "货物类型", "类型", "goodsType", "itemType", "品类", "温层", "温度要求", "temp zone", "temperature", "冷藏", "常温", "冷冻"],
     type: "string"
-  },
-  {
-    field: "paymentType",
-    possibleNames: ["支付方式", "付款方式", "paymentType", "payType", "付款类型", "支付类型"],
-    type: "string"
-  },
-  {
-    field: "collectionAmount",
-    possibleNames: ["代收金额", "代收费", "collectionAmount", "cod", "到付金额", "代收款"],
-    type: "number"
-  },
-  {
-    field: "insuredAmount",
-    possibleNames: ["保价金额", "保价", "insuredAmount", "insurance", "保险金额", "声明价值"],
-    type: "number"
   },
   {
     field: "remark",
-    possibleNames: ["备注", "备注信息", "remark", "note", "notes", "说明", "注意事项"],
+    possibleNames: ["备注", "备注信息", "remark", "note", "notes", "说明", "注意事项", "附言", "留言"],
     type: "string"
   }
 ];
 
 export function normalizeString(str: string): string {
-  return str.toLowerCase().replace(/[\s\-_（）()]/g, "").trim();
+  return str.toLowerCase().replace(/[\s\-_（）()/\\]/g, "").trim();
 }
 
 export function findFieldMapping(headerName: string): FieldMapping | undefined {
   const normalized = normalizeString(headerName);
-  return ORDER_FIELDS.find(mapping =>
-    mapping.possibleNames.some(name => normalizeString(name) === normalized)
-  );
+  
+  for (const mapping of ORDER_FIELDS) {
+    for (const name of mapping.possibleNames) {
+      if (normalizeString(name) === normalized) {
+        return mapping;
+      }
+    }
+  }
+  
+  return undefined;
 }
 
 export function mapHeadersToFields(headers: string[]): Map<string, number> {
@@ -185,4 +112,37 @@ export function parseExcelValue(value: unknown, type: "string" | "number"): stri
   }
 
   return String(value).trim() || null;
+}
+
+export interface TemplateDetectionResult {
+  matchedFields: string[];
+  confidence: number;
+  suggestedTemplate: string;
+}
+
+export function detectTemplate(headers: string[]): TemplateDetectionResult {
+  const matchedFields: string[] = [];
+  const totalFields = ORDER_FIELDS.length;
+
+  headers.forEach(header => {
+    const mapping = findFieldMapping(header);
+    if (mapping && !matchedFields.includes(mapping.field)) {
+      matchedFields.push(mapping.field);
+    }
+  });
+
+  const confidence = matchedFields.length / totalFields;
+  
+  let suggestedTemplate = "通用模板";
+  if (headers.some(h => normalizeString(h).includes("refcode") || normalizeString(h).includes("ref"))) {
+    suggestedTemplate = "英文模板";
+  } else if (headers.some(h => normalizeString(h).includes("外部编码") || normalizeString(h).includes("外部订单号"))) {
+    suggestedTemplate = "模板1";
+  } else if (headers.some(h => normalizeString(h).includes("发货人") || normalizeString(h).includes("发货电话"))) {
+    suggestedTemplate = "模板2";
+  } else if (headers.some(h => normalizeString(h).includes("发件方信息") || normalizeString(h).includes("收件方信息"))) {
+    suggestedTemplate = "模板4(合并单元格)";
+  }
+
+  return { matchedFields, confidence, suggestedTemplate };
 }
