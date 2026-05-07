@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Order } from "@/generated/prisma/client";
 
-interface Order {
+interface OrderFormData {
   id?: number;
   trackingNumber?: string;
   customerOrderNumber?: string;
@@ -37,7 +38,7 @@ interface Order {
 
 interface OrderFormProps {
   order?: Order | null;
-  onSubmit: (data: Order) => void;
+  onSubmit: (data: OrderFormData) => void;
   onCancel: () => void;
 }
 
