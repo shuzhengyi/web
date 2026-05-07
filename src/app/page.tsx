@@ -116,7 +116,40 @@ export default function Home() {
                 {showForm ? "收起表单" : "新增订单"}
               </button>
               <OrderImportButton onImportComplete={fetchOrders} />
-              <DownloadTemplateButton />
+              <div className="relative">
+                <button
+                  id="template-dropdown"
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  下载模板 ▼
+                </button>
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                  <div className="py-1">
+                    <a href="/api/orders/import/template?type=template1" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">模板1</a>
+                    <a href="/api/orders/import/template?type=template2" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">模板2</a>
+                    <a href="/api/orders/import/template?type=template3" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">模板3(英文)</a>
+                    <a href="/api/orders/import/template?type=template4" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">模板4(合并单元格)</a>
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button
+                      onClick={async () => {
+                        const response = await fetch("/api/orders/import/template", { method: "POST" });
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = "all_templates.xlsx";
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      下载全部模板
+                    </button>
+                  </div>
+                </div>
+              </div>
               <OrderExportButton />
             </div>
           </div>
