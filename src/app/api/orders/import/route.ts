@@ -6,6 +6,15 @@ interface ExcelRow {
   [key: string]: unknown;
 }
 
+function generateTrackingNumber(): string {
+  const prefix = "YT";
+  const now = new Date();
+  const dateStr = now.toISOString().slice(0, 10).replace(/-/g, "");
+  const timeStr = now.toTimeString().slice(0, 8).replace(/:/g, "");
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return `${prefix}${dateStr}${timeStr}${random}`;
+}
+
 function parseString(val: unknown): string | null {
   if (val === null || val === undefined || val === "") return null;
   return String(val);
@@ -37,8 +46,10 @@ export async function POST(request: Request) {
       );
       if (!hasData) continue;
 
+      const existingTrackingNumber = parseString(row["运单号"] || row["trackingNumber"]);
+      
       orders.push({
-        trackingNumber: parseString(row["运单号"] || row["trackingNumber"]),
+        trackingNumber: existingTrackingNumber || generateTrackingNumber(),
         customerOrderNumber: parseString(row["客户单号"] || row["customerOrderNumber"]),
         customerCode: parseString(row["客户编号"] || row["customerCode"]),
         customerName: parseString(row["客户名称"] || row["customerName"]),
