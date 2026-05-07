@@ -5,36 +5,36 @@ import { Order } from "@/generated/prisma/client";
 
 interface OrderFormData {
   id?: number;
-  trackingNumber?: string;
-  customerOrderNumber?: string;
-  customerCode?: string;
-  customerName?: string;
-  senderName?: string;
-  senderPhone?: string;
-  senderCompany?: string;
-  senderProvince?: string;
-  senderCity?: string;
-  senderDistrict?: string;
-  senderAddress?: string;
-  receiverName?: string;
-  receiverPhone?: string;
-  receiverCompany?: string;
-  receiverProvince?: string;
-  receiverCity?: string;
-  receiverDistrict?: string;
-  receiverAddress?: string;
-  goodsName?: string;
-  goodsType?: string;
-  goodsQuantity?: number;
-  goodsWeight?: number;
-  goodsVolume?: number;
-  goodsPieces?: number;
-  serviceType?: string;
-  paymentType?: string;
-  collectionAmount?: number;
-  insuredAmount?: number;
-  remark?: string;
-  status?: string;
+  trackingNumber: string | null;
+  customerOrderNumber: string | null;
+  customerCode: string | null;
+  customerName: string | null;
+  senderName: string | null;
+  senderPhone: string | null;
+  senderCompany: string | null;
+  senderProvince: string | null;
+  senderCity: string | null;
+  senderDistrict: string | null;
+  senderAddress: string | null;
+  receiverName: string | null;
+  receiverPhone: string | null;
+  receiverCompany: string | null;
+  receiverProvince: string | null;
+  receiverCity: string | null;
+  receiverDistrict: string | null;
+  receiverAddress: string | null;
+  goodsName: string | null;
+  goodsType: string | null;
+  goodsQuantity: number;
+  goodsWeight: number;
+  goodsVolume: number;
+  goodsPieces: number;
+  serviceType: string | null;
+  paymentType: string | null;
+  collectionAmount: number;
+  insuredAmount: number;
+  remark: string | null;
+  status: string;
 }
 
 interface OrderFormProps {
@@ -91,11 +91,11 @@ const generateTrackingNumber = () => {
 
 interface InputFieldProps {
   label: string;
-  field: string;
+  field: keyof OrderFormData;
   type?: string;
   placeholder?: string;
-  value: string;
-  onChange: (field: string, value: string) => void;
+  value: string | null;
+  onChange: (field: keyof OrderFormData, value: string | number | null) => void;
   readOnly?: boolean;
 }
 
@@ -107,8 +107,8 @@ function InputField({ label, field, type = "text", placeholder, value, onChange,
       </label>
       <input
         type={type}
-        value={value}
-        onChange={(e) => onChange(field, e.target.value)}
+        value={value || ""}
+        onChange={(e) => onChange(field, e.target.value || null)}
         placeholder={placeholder}
         readOnly={readOnly}
         className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${readOnly ? "bg-gray-50 text-gray-700 font-mono" : ""}`}
@@ -119,11 +119,11 @@ function InputField({ label, field, type = "text", placeholder, value, onChange,
 
 interface SelectFieldProps {
   label: string;
-  field: string;
+  field: keyof OrderFormData;
   options: string[];
   placeholder?: string;
-  value: string;
-  onChange: (field: string, value: string) => void;
+  value: string | null;
+  onChange: (field: keyof OrderFormData, value: string | number | null) => void;
 }
 
 function SelectField({ label, field, options, placeholder, value, onChange }: SelectFieldProps) {
@@ -133,8 +133,8 @@ function SelectField({ label, field, options, placeholder, value, onChange }: Se
         {label}
       </label>
       <select
-        value={value}
-        onChange={(e) => onChange(field, e.target.value)}
+        value={value || ""}
+        onChange={(e) => onChange(field, e.target.value || null)}
         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       >
         <option value="">{placeholder}</option>
@@ -150,10 +150,10 @@ function SelectField({ label, field, options, placeholder, value, onChange }: Se
 
 interface NumberFieldProps {
   label: string;
-  field: string;
+  field: keyof OrderFormData;
   placeholder?: string;
   value: number;
-  onChange: (field: string, value: number) => void;
+  onChange: (field: keyof OrderFormData, value: string | number | null) => void;
 }
 
 function NumberField({ label, field, placeholder, value, onChange }: NumberFieldProps) {
@@ -175,10 +175,10 @@ function NumberField({ label, field, placeholder, value, onChange }: NumberField
 
 interface TextAreaFieldProps {
   label: string;
-  field: string;
+  field: keyof OrderFormData;
   placeholder?: string;
-  value: string;
-  onChange: (field: string, value: string) => void;
+  value: string | null;
+  onChange: (field: keyof OrderFormData, value: string | number | null) => void;
 }
 
 function TextAreaField({ label, field, placeholder, value, onChange }: TextAreaFieldProps) {
@@ -188,8 +188,8 @@ function TextAreaField({ label, field, placeholder, value, onChange }: TextAreaF
         {label}
       </label>
       <textarea
-        value={value}
-        onChange={(e) => onChange(field, e.target.value)}
+        value={value || ""}
+        onChange={(e) => onChange(field, e.target.value || null)}
         placeholder={placeholder}
         rows={3}
         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
@@ -201,39 +201,41 @@ function TextAreaField({ label, field, placeholder, value, onChange }: TextAreaF
 export default function OrderForm({ order, onSubmit, onCancel }: OrderFormProps) {
   const [trackingNumber] = useState(() => order?.trackingNumber || generateTrackingNumber());
   
-  const [data, setData] = useState<Order>(() => ({
-    trackingNumber: trackingNumber,
-    customerOrderNumber: order?.customerOrderNumber || "",
-    customerCode: order?.customerCode || "",
-    customerName: order?.customerName || "",
-    senderName: order?.senderName || "",
-    senderPhone: order?.senderPhone || "",
-    senderCompany: order?.senderCompany || "",
-    senderProvince: order?.senderProvince || "",
-    senderCity: order?.senderCity || "",
-    senderDistrict: order?.senderDistrict || "",
-    senderAddress: order?.senderAddress || "",
-    receiverName: order?.receiverName || "",
-    receiverPhone: order?.receiverPhone || "",
-    receiverCompany: order?.receiverCompany || "",
-    receiverProvince: order?.receiverProvince || "",
-    receiverCity: order?.receiverCity || "",
-    receiverDistrict: order?.receiverDistrict || "",
-    receiverAddress: order?.receiverAddress || "",
-    goodsName: order?.goodsName || "",
-    goodsType: order?.goodsType || "",
+  const [data, setData] = useState<OrderFormData>(() => ({
+    id: order?.id,
+    trackingNumber: trackingNumber || null,
+    customerOrderNumber: order?.customerOrderNumber || null,
+    customerCode: order?.customerCode || null,
+    customerName: order?.customerName || null,
+    senderName: order?.senderName || null,
+    senderPhone: order?.senderPhone || null,
+    senderCompany: order?.senderCompany || null,
+    senderProvince: order?.senderProvince || null,
+    senderCity: order?.senderCity || null,
+    senderDistrict: order?.senderDistrict || null,
+    senderAddress: order?.senderAddress || null,
+    receiverName: order?.receiverName || null,
+    receiverPhone: order?.receiverPhone || null,
+    receiverCompany: order?.receiverCompany || null,
+    receiverProvince: order?.receiverProvince || null,
+    receiverCity: order?.receiverCity || null,
+    receiverDistrict: order?.receiverDistrict || null,
+    receiverAddress: order?.receiverAddress || null,
+    goodsName: order?.goodsName || null,
+    goodsType: order?.goodsType || null,
     goodsQuantity: order?.goodsQuantity || 0,
     goodsWeight: order?.goodsWeight || 0,
     goodsVolume: order?.goodsVolume || 0,
     goodsPieces: order?.goodsPieces || 0,
-    serviceType: order?.serviceType || "",
-    paymentType: order?.paymentType || "",
+    serviceType: order?.serviceType || null,
+    paymentType: order?.paymentType || null,
     collectionAmount: order?.collectionAmount || 0,
     insuredAmount: order?.insuredAmount || 0,
-    remark: order?.remark || "",
+    remark: order?.remark || null,
+    status: order?.status || "pending",
   }));
 
-  const handleChange = (field: keyof Order, value: string | number) => {
+  const handleChange = (field: keyof OrderFormData, value: string | number | null) => {
     setData((prev) => ({ ...prev, [field]: value }));
   };
 
