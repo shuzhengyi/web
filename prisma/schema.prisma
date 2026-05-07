@@ -7,14 +7,38 @@ datasource db {
   provider = "postgresql"
 }
 
-model Item {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(200)
-  category    String?  @db.VarChar(100)
-  quantity    Int      @default(0)
-  price       Float    @default(0)
-  description String?  @db.Text
-  status      String   @default("active") @db.VarChar(20)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Order {
+  id                  Int      @id @default(autoincrement())
+  trackingNumber      String?  @db.VarChar(100)
+  customerOrderNumber String?  @db.VarChar(100)
+  customerCode        String?  @db.VarChar(50)
+  customerName        String?  @db.VarChar(100)
+  senderName          String?  @db.VarChar(50)
+  senderPhone         String?  @db.VarChar(20)
+  senderCompany       String?  @db.VarChar(100)
+  senderProvince      String?  @db.VarChar(50)
+  senderCity          String?  @db.VarChar(50)
+  senderDistrict      String?  @db.VarChar(50)
+  senderAddress       String?  @db.Text
+  receiverName        String?  @db.VarChar(50)
+  receiverPhone       String?  @db.VarChar(20)
+  receiverCompany     String?  @db.VarChar(100)
+  receiverProvince    String?  @db.VarChar(50)
+  receiverCity        String?  @db.VarChar(50)
+  receiverDistrict    String?  @db.VarChar(50)
+  receiverAddress     String?  @db.Text
+  goodsName           String?  @db.VarChar(200)
+  goodsType           String?  @db.VarChar(50)
+  goodsQuantity       Int      @default(0)
+  goodsWeight         Float    @default(0)
+  goodsVolume         Float    @default(0)
+  goodsPieces         Int      @default(0)
+  serviceType         String?  @db.VarChar(50)
+  paymentType         String?  @db.VarChar(20)
+  collectionAmount    Float    @default(0)
+  insuredAmount       Float    @default(0)
+  remark              String?  @db.Text
+  status              String   @default("pending") @db.VarChar(20)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
