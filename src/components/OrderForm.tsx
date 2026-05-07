@@ -34,6 +34,7 @@ interface OrderFormData {
   collectionAmount?: number;
   insuredAmount?: number;
   remark?: string;
+  status?: string;
 }
 
 interface OrderFormProps {
