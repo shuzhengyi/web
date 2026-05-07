@@ -2,6 +2,20 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import * as XLSX from "xlsx";
 
+interface ExcelRow {
+  [key: string]: unknown;
+}
+
+function parseString(val: unknown): string | null {
+  if (val === null || val === undefined || val === "") return null;
+  return String(val);
+}
+
+function parseNumber(val: unknown): number {
+  const num = parseFloat(String(val));
+  return isNaN(num) ? 0 : num;
+}
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -14,63 +28,48 @@ export async function POST(request: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(worksheet);
+    const rows = XLSX.utils.sheet_to_json(worksheet) as ExcelRow[];
 
-    const orders = rows
-      .filter((row: Record<string, any>) => {
-        return Object.values(row).some((val) => val && val !== "" && val !== null);
-      })
-      .map((row: Record<string, any>) => {
-        const toString = (val: any): string | null => {
-          if (val === null || val === undefined || val === "") return null;
-          return String(val);
-        };
-        
-        return ({
-        trackingNumber: toString(row["运单号"] || row["trackingNumber"]),
-        customerOrderNumber: toString(row["客户单号"] || row["customerOrderNumber"]),
-        customerCode: toString(row["客户编号"] || row["customerCode"]),
-        customerName: toString(row["客户名称"] || row["customerName"]),
-        senderName: toString(row["寄件人"] || row["senderName"]),
-        senderPhone: toString(row["寄件人手机"] || row["senderPhone"]),
-        senderCompany: toString(row["寄件公司"] || row["senderCompany"]),
-        senderProvince: toString(row["寄件省份"] || row["senderProvince"]),
-        senderCity: toString(row["寄件城市"] || row["senderCity"]),
-        senderDistrict: toString(row["寄件区县"] || row["senderDistrict"]),
-        senderAddress: toString(row["寄件地址"] || row["senderAddress"]),
-        receiverName: toString(row["收件人"] || row["receiverName"]),
-        receiverPhone: toString(row["收件人手机"] || row["receiverPhone"]),
-        receiverCompany: toString(row["收件公司"] || row["receiverCompany"]),
-        receiverProvince: toString(row["收件省份"] || row["receiverProvince"]),
-        receiverCity: toString(row["收件城市"] || row["receiverCity"]),
-        receiverDistrict: toString(row["收件区县"] || row["receiverDistrict"]),
-        receiverAddress: toString(row["收件地址"] || row["receiverAddress"]),
-        goodsName: toString(row["物品名称"] || row["goodsName"]),
-        goodsType: toString(row["物品类型"] || row["goodsType"]),
-        goodsQuantity: !isNaN(parseInt(row["物品数量"]?.toString() || "0")) 
-          ? parseInt(row["物品数量"]?.toString() || "0") 
-          : 0,
-        goodsWeight: !isNaN(parseFloat(row["物品重量"]?.toString() || "0")) 
-          ? parseFloat(row["物品重量"]?.toString() || "0") 
-          : 0,
-        goodsVolume: !isNaN(parseFloat(row["物品体积"]?.toString() || "0")) 
-          ? parseFloat(row["物品体积"]?.toString() || "0") 
-          : 0,
-        goodsPieces: !isNaN(parseInt(row["物品件数"]?.toString() || "0")) 
-          ? parseInt(row["物品件数"]?.toString() || "0") 
-          : 0,
-        serviceType: toString(row["服务类型"] || row["serviceType"]),
-        paymentType: toString(row["支付方式"] || row["paymentType"]),
-        collectionAmount: !isNaN(parseFloat(row["代收金额"]?.toString() || "0")) 
-          ? parseFloat(row["代收金额"]?.toString() || "0") 
-          : 0,
-        insuredAmount: !isNaN(parseFloat(row["保价金额"]?.toString() || "0")) 
-          ? parseFloat(row["保价金额"]?.toString() || "0") 
-          : 0,
-        remark: toString(row["备注"] || row["remark"]),
+    const orders = [];
+    for (const row of rows) {
+      const hasData = Object.values(row).some(
+        (val) => val !== null && val !== undefined && val !== ""
+      );
+      if (!hasData) continue;
+
+      orders.push({
+        trackingNumber: parseString(row["运单号"] || row["trackingNumber"]),
+        customerOrderNumber: parseString(row["客户单号"] || row["customerOrderNumber"]),
+        customerCode: parseString(row["客户编号"] || row["customerCode"]),
+        customerName: parseString(row["客户名称"] || row["customerName"]),
+        senderName: parseString(row["寄件人"] || row["senderName"]),
+        senderPhone: parseString(row["寄件人手机"] || row["senderPhone"]),
+        senderCompany: parseString(row["寄件公司"] || row["senderCompany"]),
+        senderProvince: parseString(row["寄件省份"] || row["senderProvince"]),
+        senderCity: parseString(row["寄件城市"] || row["senderCity"]),
+        senderDistrict: parseString(row["寄件区县"] || row["senderDistrict"]),
+        senderAddress: parseString(row["寄件地址"] || row["senderAddress"]),
+        receiverName: parseString(row["收件人"] || row["receiverName"]),
+        receiverPhone: parseString(row["收件人手机"] || row["receiverPhone"]),
+        receiverCompany: parseString(row["收件公司"] || row["receiverCompany"]),
+        receiverProvince: parseString(row["收件省份"] || row["receiverProvince"]),
+        receiverCity: parseString(row["收件城市"] || row["receiverCity"]),
+        receiverDistrict: parseString(row["收件区县"] || row["receiverDistrict"]),
+        receiverAddress: parseString(row["收件地址"] || row["receiverAddress"]),
+        goodsName: parseString(row["物品名称"] || row["goodsName"]),
+        goodsType: parseString(row["物品类型"] || row["goodsType"]),
+        goodsQuantity: Math.round(parseNumber(row["物品数量"] || row["goodsQuantity"])),
+        goodsWeight: parseNumber(row["物品重量"] || row["goodsWeight"]),
+        goodsVolume: parseNumber(row["物品体积"] || row["goodsVolume"]),
+        goodsPieces: Math.round(parseNumber(row["物品件数"] || row["goodsPieces"])),
+        serviceType: parseString(row["服务类型"] || row["serviceType"]),
+        paymentType: parseString(row["支付方式"] || row["paymentType"]),
+        collectionAmount: parseNumber(row["代收金额"] || row["collectionAmount"]),
+        insuredAmount: parseNumber(row["保价金额"] || row["insuredAmount"]),
+        remark: parseString(row["备注"] || row["remark"]),
         status: "pending",
       });
-    });
+    }
 
     if (orders.length === 0) {
       return NextResponse.json({ error: "没有找到有效数据" }, { status: 400 });
