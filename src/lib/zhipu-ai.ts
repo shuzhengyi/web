@@ -55,14 +55,14 @@ function convertExcelToText(buffer: Buffer, maxRows: number = 50): string {
   const workbook = XLSX.read(buffer);
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
-  const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+  const jsonData: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
   
   // 只取前 maxRows 行，避免 token 超限
   const limitedData = jsonData.slice(0, maxRows);
   
   // 转换为 CSV 格式的文本
-  return limitedData.map(row => {
-    return row.map(cell => {
+  return limitedData.map((row: any[]) => {
+    return row.map((cell: any) => {
       if (cell === null || cell === undefined) return '';
       return String(cell).trim();
     }).join(',');

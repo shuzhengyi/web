@@ -1158,7 +1158,7 @@ export class ParseEngine {
       }
       
       if (values.length > 0) {
-        item[targetField as keyof ParsedItem] = values.join('-');
+        (item as any)[targetField] = values.join('-');
       }
     }
 
@@ -1222,13 +1222,13 @@ export class ParseEngine {
       
       // 如果有额外的矩阵值，追加到已有值上
       if (additionalValues.length > 0) {
-        const existingValue = item[targetField as keyof ParsedItem];
+        const existingValue = (item as any)[targetField];
         if (existingValue) {
           // 已有值，追加矩阵值
-          item[targetField as keyof ParsedItem] = `${existingValue}-${additionalValues.join('-')}`;
+          (item as any)[targetField] = `${existingValue}-${additionalValues.join('-')}`;
         } else {
           // 没有已有值，直接设置矩阵值
-          item[targetField as keyof ParsedItem] = additionalValues.join('-');
+          (item as any)[targetField] = additionalValues.join('-');
         }
       }
     }
@@ -1302,9 +1302,9 @@ export class ParseEngine {
       
       if (values.length > 0) {
         if (targetField === 'quantity') {
-          item[targetField as keyof ParsedItem] = values.reduce((sum, val) => sum + Number(val), 0);
+          (item as any)[targetField] = values.reduce((sum, val) => sum + Number(val), 0);
         } else {
-          item[targetField as keyof ParsedItem] = values.join('-');
+          (item as any)[targetField] = values.join('-');
         }
       }
     }
@@ -1341,7 +1341,7 @@ export class ParseEngine {
       const workbook = XLSX.read(buffer);
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      const jsonData: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
 
       const engine = new ParseEngine({ fieldMapping: {} });
       const sections = engine.detectSections(jsonData);
