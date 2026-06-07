@@ -780,7 +780,7 @@ export default function FileImporter({ rules, onImportComplete, onRefreshRules }
               onSaveComplete={handleRuleSaveComplete}
               onParseComplete={(data, config) => {
                 // 直接进入预览步骤
-                setPreviewData(data);
+                setPreviewData(data.items);
                 setGroupedByStore(false); // 不启用分组显示
                 setShowRuleEditor(false);
                 setStep('preview');
@@ -818,7 +818,7 @@ export default function FileImporter({ rules, onImportComplete, onRefreshRules }
               onSaveComplete={handleRuleSaveComplete}
               onParseComplete={(data, config) => {
                 // 直接进入预览步骤
-                setPreviewData(data);
+                setPreviewData(data.items);
                 setGroupedByStore(false); // 不启用分组显示
                 setShowRuleEditor(false);
                 setStep('preview');

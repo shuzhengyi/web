@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ParseRule } from '@/generated/prisma/client';
-import { ParseEngine, type ParseConfig } from '@/lib/parse-engine';
+import { ParseEngine, type ParseConfig, type ParseResult } from '@/lib/parse-engine';
 import { parseExcelWithAI, detectExcelFormat } from '@/lib/zhipu-ai';
 import * as XLSX from 'xlsx';
 
@@ -10,7 +10,7 @@ interface RuleEditorProps {
   rule: ParseRule | null;
   onClose: () => void;
   onSaveComplete: (savedRule?: ParseRule) => void;
-  onParseComplete?: (data: any[], config: ParseConfig) => void;
+  onParseComplete?: (data: ParseResult, config: ParseConfig) => void;
   mode?: 'create' | 'edit'; // create: 新增规则, edit: 编辑规则
   file?: File | null; // 从外部传入的文件，用于预览
 }
@@ -1158,7 +1158,8 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
           try {
             const parseConfig = buildConfig();
             const engine = new ParseEngine(parseConfig);
-            const buffer = await previewFile.arrayBuffer();
+            const arrayBuffer = await previewFile.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
             const result = await engine.parseExcel(buffer);
             onParseComplete(result, parseConfig);
           } catch (parseError) {
@@ -1297,7 +1298,7 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
                           onChange={(e) => {
                             setMatrixTransposeEnabled(e.target.checked);
                             if (!e.target.checked) {
-                              setMatrices([{ id: '1', name: '门店', columns: [] }]);
+                              setMatrices([{ id: '1', name: '门店', valueName: '门店名称', columns: [] }]);
                             }
                           }}
                           className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -1747,11 +1748,14 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
                               <span className="text-gray-600">头部字段映射：</span>
                               <div className="mt-1 ml-4 text-xs text-gray-500">
                                 {Object.entries(cardHeaderMapping).map(([rowOffset, colMapping]) => (
-                                  Object.entries(colMapping).map(([colIndex, field]) => (
-                                    <div key={`${rowOffset}-${colIndex}`}>
-                                      行偏移 {rowOffset} → 列 {colIndex} → {field === 'storeName' ? '收货门店' : field === 'receiverName' ? '收货人' : field === 'receiverPhone' ? '电话' : field === 'receiverAddress' ? '收货地址' : field}
-                                    </div>
-                                  ))
+                                  Object.entries(colMapping).map(([colIndex, field]) => {
+                                    const fieldLabel = field === 'storeName' ? '收货门店' : field === 'receiverName' ? '收货人' : field === 'receiverPhone' ? '电话' : field === 'receiverAddress' ? '收货地址' : field;
+                                    return (
+                                      <div key={`${rowOffset}-${colIndex}`}>
+                                        行偏移 {rowOffset} → 列 {colIndex} → {fieldLabel}
+                                      </div>
+                                    );
+                                  })
                                 ))}
                               </div>
                             </div>
