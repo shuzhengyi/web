@@ -729,7 +729,7 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
           if (firstGroupItems.length > 0) {
             const firstItem = firstGroupItems[0];
             // 更新头部信息
-            const headerData = [
+            const headerData: { [key: string]: string }[] = [
               { '调入门店': firstItem.storeName || '' },
               { '收货人': firstItem.receiverName || '' },
               { '电话': firstItem.receiverPhone || '' },
@@ -783,7 +783,7 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
         const workbook = XLSX.read(data);
         const sheet = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheet];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        const jsonData: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
         
         // 更新预览数据
         setRawFileData(jsonData);
@@ -907,11 +907,11 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
         return;
       }
 
-      // 使用AI结果进行字段映射
+      // 使用 AI 结果进行字段映射
       const workbook = XLSX.read(buffer);
       const sheet = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheet];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      const jsonData: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
       
       // 更新预览数据（这会解析三部分结构并设置到状态中）
       setRawFileData(jsonData);
@@ -1070,8 +1070,8 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
       }
 
       // 显示解析结果
-      const commonInfo = aiResult.data.commonInfo || {};
-      const items = aiResult.data.items || [];
+      const commonInfo: any = aiResult.data?.commonInfo || {};
+      const items: any[] = aiResult.data?.items || [];
       
       const parsedData = items.map((item: any, index: number) => ({
         '#': index + 1,
@@ -1159,7 +1159,7 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
             const parseConfig = buildConfig();
             const engine = new ParseEngine(parseConfig);
             const buffer = await previewFile.arrayBuffer();
-            const result = await engine.parse(buffer);
+            const result = await engine.parseExcel(buffer);
             onParseComplete(result, parseConfig);
           } catch (parseError) {
             console.error('解析失败:', parseError);

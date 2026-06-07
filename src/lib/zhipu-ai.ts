@@ -24,7 +24,22 @@ export interface ZhipuResponse {
 
 export interface ExcelParseResult {
   success: boolean;
-  data?: any[];
+  data?: {
+    commonInfo?: {
+      externalCode?: string;
+      storeName?: string;
+      receiverName?: string;
+      receiverPhone?: string;
+      receiverAddress?: string;
+    };
+    items?: Array<{
+      skuCode?: string;
+      skuName?: string;
+      quantity?: number;
+      specification?: string;
+      remark?: string;
+    }>;
+  };
   error?: string;
   tokenUsage?: {
     prompt_tokens: number;
