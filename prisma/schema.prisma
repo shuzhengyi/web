@@ -42,3 +42,68 @@ model Order {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
+
+// 出库单主表 - 按外部编码聚合
+model OutboundOrder {
+  id                  Int              @id @default(autoincrement())
+  externalCode        String           @db.VarChar(100) // 外部编码，用于聚合
+  storeName           String?          @db.VarChar(200) // 收货门店
+  receiverName        String?          @db.VarChar(100) // 收件人姓名
+  receiverPhone       String?          @db.VarChar(20)  // 收件人电话
+  receiverAddress     String?          @db.Text         // 收件人地址
+  status              String           @default("pending") @db.VarChar(20)
+  remark              String?          @db.Text
+  items               OutboundItem[]
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  @@index([externalCode])
+}
+
+// 出库单项（SKU级）
+model OutboundItem {
+  id                  Int              @id @default(autoincrement())
+  outboundOrderId     Int
+  skuCode             String           @db.VarChar(100) // SKU物品编码
+  skuName             String           @db.VarChar(200) // SKU物品名称
+  quantity            Int              @default(0)     // SKU发货数量
+  specification       String?          @db.VarChar(200) // SKU规格型号
+  remark              String?          @db.Text
+  outboundOrder       OutboundOrder    @relation(fields: [outboundOrderId], references: [id], onDelete: Cascade)
+  createdAt           DateTime         @default(now())
+
+  @@index([outboundOrderId])
+}
+
+// 解析规则表
+model ParseRule {
+  id                  Int              @id @default(autoincrement())
+  name                String           @db.VarChar(200) // 规则名称
+  description         String?          @db.Text
+  fileType            String           @db.VarChar(50)  // 文件类型：excel, pdf
+  config              Json             // 规则配置（JSON）
+  isActive            Boolean          @default(true)
+  parseHistories      ParseHistory[]
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  @@index([isActive])
+}
+
+// 解析历史记录
+model ParseHistory {
+  id                  Int              @id @default(autoincrement())
+  ruleId              Int?
+  fileName            String           @db.VarChar(200)
+  fileType            String           @db.VarChar(50)
+  status              String           @db.VarChar(20) // success, failed
+  successCount        Int              @default(0)
+  failCount           Int              @default(0)
+  errorMessage        String?          @db.Text
+  parsedData          Json?            // 解析的数据预览
+  parseRule           ParseRule?       @relation(fields: [ruleId], references: [id], onDelete: SetNull)
+  createdAt           DateTime         @default(now())
+
+  @@index([ruleId])
+  @@index([createdAt])
+}

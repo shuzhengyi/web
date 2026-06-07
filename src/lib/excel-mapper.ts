@@ -41,6 +41,11 @@ export const ORDER_FIELDS: FieldMapping[] = [
     type: "string"
   },
   {
+    field: "storeName",
+    possibleNames: ["门店", "仓库", "仓", "店名", "店铺", "门店名称", "收货门店", "门店地址", "store", "warehouse", "storeName", "shopName"],
+    type: "string"
+  },
+  {
     field: "receiverPhone",
     possibleNames: ["收件人电话", "收件人手机", "收货人电话", "receiverPhone", "toPhone", "consigneeTel", "收件电话", "收货电话", "receiver tel", "receiver telephone", "收货手机号", "收货电话号", "收件手机", "收货手机"],
     type: "string"

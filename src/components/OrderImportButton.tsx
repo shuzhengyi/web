@@ -297,12 +297,10 @@ export default function OrderImportButton({ onImportComplete, onRefresh }: Order
 
       {showPreview && (
         <DataPreviewEditor
-          data={previewData}
-          headers={previewHeaders}
-          errors={previewErrors}
-          duplicates={previewDuplicates}
-          onClose={() => setShowPreview(false)}
-          onImport={handleConfirmImport}
+          initialData={previewData}
+          existingExternalCodes={[]}
+          onSave={handleConfirmImport}
+          onCancel={() => setShowPreview(false)}
         />
       )}
     </>
