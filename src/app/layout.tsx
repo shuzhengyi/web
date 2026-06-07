@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import AppLayout from "@/components/AppLayout";
 
 export const metadata: Metadata = {
-  title: "数据管理 - Excel 导入导出",
-  description: "Next.js 全栈应用，支持 Excel 导入导出",
+  title: "物流订单管理系统",
+  description: "Next.js 全栈应用，支持运单和出库单管理",
 };
 
 export default function RootLayout({
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <AppLayout>{children}</AppLayout>
+      </body>
     </html>
   );
 }

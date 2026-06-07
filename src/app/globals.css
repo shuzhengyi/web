@@ -1,19 +1,200 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --primary-color: #0fc6c2;
+  --primary-dark: #0dafab;
+  --primary-light: #e8fcfb;
+  
+  --bg-sidebar: #0d1117;
+  --bg-sidebar-hover: #21262d;
+  --bg-content: #f6f7f8;
+  --bg-card: #ffffff;
+  
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-sidebar: #c9d1d9;
+  --text-sidebar-active: #ffffff;
+  
+  --border-color: #e5e7eb;
+  --border-card: #d1d5db;
+  
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-button: 0 2px 4px rgba(15, 198, 194, 0.3);
+  
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-family);
+  background-color: var(--bg-content);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+@layer utilities {
+  .bg-primary {
+    background-color: var(--primary-color);
+  }
+  
+  .bg-primary-dark {
+    background-color: var(--primary-dark);
+  }
+  
+  .bg-primary-light {
+    background-color: var(--primary-light);
+  }
+  
+  .bg-sidebar {
+    background-color: var(--bg-sidebar);
+  }
+  
+  .bg-sidebar-hover {
+    background-color: var(--bg-sidebar-hover);
+  }
+  
+  .bg-content {
+    background-color: var(--bg-content);
+  }
+  
+  .bg-card {
+    background-color: var(--bg-card);
+  }
+  
+  .text-primary-color {
+    color: var(--primary-color);
+  }
+  
+  .text-sidebar {
+    color: var(--text-sidebar);
+  }
+  
+  .text-sidebar-active {
+    color: var(--text-sidebar-active);
+  }
+  
+  .border-card {
+    border-color: var(--border-card);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .shadow-card-hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+  
+  .shadow-button {
+    box-shadow: var(--shadow-button);
+  }
+  
+  .radius-sm {
+    border-radius: var(--radius-sm);
+  }
+  
+  .radius-md {
+    border-radius: var(--radius-md);
+  }
+  
+  .radius-lg {
+    border-radius: var(--radius-lg);
+  }
+  
+  .transition-card {
+    transition: all 0.2s ease;
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-button);
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--primary-dark);
+    box-shadow: 0 4px 8px rgba(15, 198, 194, 0.4);
+  }
+  
+  .btn-secondary {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-secondary:hover {
+    background-color: var(--bg-content);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+  }
+  
+  .card {
+    background-color: var(--bg-card);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-card);
+    transition: all 0.2s ease;
+  }
+  
+  .card:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+  
+  .input-field {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+  }
+  
+  .input-field:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
+  
+  .select-field {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  
+  .select-field:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
 }
