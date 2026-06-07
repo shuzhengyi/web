@@ -1749,7 +1749,7 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
                               <div className="mt-1 ml-4 text-xs text-gray-500">
                                 {Object.entries(cardHeaderMapping).map(([rowOffset, colMapping]) => (
                                   Object.entries(colMapping).map(([colIndex, field]) => {
-                                    const fieldLabel = field === 'storeName' ? '收货门店' : field === 'receiverName' ? '收货人' : field === 'receiverPhone' ? '电话' : field === 'receiverAddress' ? '收货地址' : field;
+                                    const fieldLabel: string = field === 'storeName' ? '收货门店' : field === 'receiverName' ? '收货人' : field === 'receiverPhone' ? '电话' : field === 'receiverAddress' ? '收货地址' : String(field);
                                     return (
                                       <div key={`${rowOffset}-${colIndex}`}>
                                         行偏移 {rowOffset} → 列 {colIndex} → {fieldLabel}

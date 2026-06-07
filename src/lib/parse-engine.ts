@@ -157,8 +157,8 @@ export class ParseEngine {
     };
     
     try {
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      console.log(`[parseSingleSheet] 工作表: ${sheetName}, 行数: ${jsonData.length}`);
+      const jsonData: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+      console.log(`[parseSingleSheet] 工作表：${sheetName}, 行数：${jsonData.length}`);
       
       // 检查是否启用了卡片分组模式
       if (this.config.cardGroup?.enabled && this.config.cardGroup.keyword) {
@@ -430,10 +430,10 @@ export class ParseEngine {
           // 根据目标字段类型处理值
           switch (targetField) {
             case 'quantity':
-              info[targetField as keyof ParsedItem] = Number(value) || 0;
+              (info as any)[targetField] = Number(value) || 0;
               break;
             default:
-              info[targetField as keyof ParsedItem] = String(value).trim();
+              (info as any)[targetField] = String(value).trim();
           }
         }
       }
@@ -478,11 +478,13 @@ export class ParseEngine {
       skuName: '',
       specification: '',
       quantity: 0,
-      ...commonInfo as ParsedItem,
     };
     
+    // 先应用公共信息
+    Object.assign(item, commonInfo);
+    
     // 在卡片模式下，直接使用列索引获取数据
-    // 列0=物品编码/商品编码，列1=商品名称，列2=规格，列3=数量
+    // 列 0=物品编码/商品编码，列 1=商品名称，列 2=规格，列 3=数量
     if (row[0]) item.skuCode = String(row[0]).trim();
     if (row[1]) item.skuName = String(row[1]).trim();
     if (row[2]) item.specification = String(row[2]).trim();
@@ -860,7 +862,7 @@ export class ParseEngine {
         }
         
         if (values.length > 0) {
-          info[targetField] = values.join('-');
+          (info as any)[targetField] = values.join('-');
         }
         continue;
       }
@@ -868,7 +870,7 @@ export class ParseEngine {
       // 2. 如果用户没有配置，则使用自动检测（基于关键词匹配）
       const autoDetectResult = this.autoDetectField(targetField, allKeyValuePairs);
       if (autoDetectResult) {
-        info[targetField] = autoDetectResult;
+        (info as any)[targetField] = autoDetectResult;
       }
     }
 
@@ -1324,19 +1326,6 @@ export class ParseEngine {
       specification: item.specification,
       remark: item.remark,
     };
-  }
-
-  private applyTransform(value: any, transform: string): any {
-    switch (transform) {
-      case 'trim':
-        return String(value || '').trim();
-      case 'number':
-        return Number(value) || 0;
-      case 'string':
-        return String(value || '');
-      default:
-        return value;
-    }
   }
 
   /**
