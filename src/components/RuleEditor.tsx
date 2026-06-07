@@ -536,7 +536,12 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
         currentMapping.sourceColumn = '';
       }
       
-      currentMapping[field] = value;
+      // 类型断言：确保 section 值是有效的联合类型
+      if (field === 'section') {
+        currentMapping[field] = value as 'data' | 'header' | 'footer';
+      } else {
+        currentMapping[field] = value;
+      }
       newMappings[index] = currentMapping;
       return newMappings;
     });
