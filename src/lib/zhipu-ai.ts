@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 
-const ZHIPU_API_KEY = '1f2a6045292a4a64b2babc25eb2410ae.AURG2MZxiRi6J3kK';
+const ZHIPU_API_KEY = process.env.ZHIPU_API_KEY || '';
 const ZHIPU_API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
 const ZHIPU_MODEL = 'GLM-4.7-Flash';
 

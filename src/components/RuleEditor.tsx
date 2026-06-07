@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { ParseRule } from '@/generated/prisma/client';
 import { ParseEngine, type ParseConfig, type ParseResult } from '@/lib/parse-engine';
-import { parseExcelWithAI, detectExcelFormat } from '@/lib/zhipu-ai';
 import * as XLSX from 'xlsx';
 
 interface RuleEditorProps {
@@ -899,11 +898,17 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
 
     setLoading(true);
     try {
-      const buffer = await previewFile.arrayBuffer();
-      
-      // 调用智谱 AI 进行字段映射分析
-      const aiResult = await detectExcelFormat(Buffer.from(buffer));
-      
+      const formData = new FormData();
+      formData.append('file', previewFile);
+
+      // 调用 API Route 进行字段映射分析
+      const response = await fetch('/api/ai/detect-excel-format', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const aiResult = await response.json();
+
       if (!aiResult.success) {
         // AI调用失败，回退到本地自动映射
         alert(`AI 调用失败：${aiResult.error}\n将使用本地规则进行自动映射...`);
@@ -913,6 +918,7 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
       }
 
       // 使用 AI 结果进行字段映射
+      const buffer = await previewFile.arrayBuffer();
       const workbook = XLSX.read(buffer);
       const sheet = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheet];
@@ -1064,11 +1070,17 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
 
     setLoading(true);
     try {
-      const buffer = await previewFile.arrayBuffer();
-      
-      // 使用智谱 AI 解析
-      const aiResult = await parseExcelWithAI(Buffer.from(buffer));
-      
+      const formData = new FormData();
+      formData.append('file', previewFile);
+
+      // 使用 API Route 解析
+      const response = await fetch('/api/ai/parse-excel', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const aiResult = await response.json();
+
       if (!aiResult.success || !aiResult.data) {
         alert(`AI 解析失败：${aiResult.error}`);
         return;
