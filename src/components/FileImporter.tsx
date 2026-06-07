@@ -196,8 +196,25 @@ export default function FileImporter({ rules, onImportComplete, onRefreshRules }
   const executeParse = async (ruleId: string) => {
     if (!file) return;
 
+    // 先读取文件获取实际行数
+    let totalRows = 100; // 默认值
+    try {
+      const buffer = await file.arrayBuffer();
+      if (fileType === 'excel') {
+        const XLSX = await import('xlsx');
+        const workbook = XLSX.read(buffer);
+        const sheet = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheet];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+        // 减去表头行
+        totalRows = Math.max(0, jsonData.length - 1);
+      }
+    } catch (e) {
+      console.error('读取文件行数失败:', e);
+    }
+
     setStep('parsing');
-    setProgress({ percent: 0, current: 0, total: 100, message: '准备解析...' });
+    setProgress({ percent: 0, current: 0, total: totalRows, message: '准备解析...' });
 
     abortControllerRef.current = new AbortController();
 
@@ -210,9 +227,11 @@ export default function FileImporter({ rules, onImportComplete, onRefreshRules }
       const progressInterval = setInterval(() => {
         setProgress(prev => {
           const newPercent = Math.min(prev.percent + 10, 90);
+          const newCurrent = Math.round((newPercent / 100) * prev.total);
           return {
             ...prev,
             percent: newPercent,
+            current: Math.min(newCurrent, prev.total),
             message: `正在解析文件... ${newPercent}%`
           };
         });

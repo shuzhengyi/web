@@ -176,6 +176,11 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
         if (config.cardHeaderMapping) {
           setCardHeaderMapping(config.cardHeaderMapping);
         }
+        
+        // 加载主体起始行配置
+        if (config.headerRow) {
+          setManualHeaderRow(config.headerRow);
+        }
       }
     } else {
       setFieldMappings(TARGET_FIELDS.map(f => ({ 
@@ -1250,7 +1255,7 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
               </div>
 
               {/* 手动设置主体起始行 */}
-              {mode === 'create' && rawFileData.length > 0 && (
+              {((mode === 'create' && rawFileData.length > 0) || (mode === 'edit' && manualHeaderRow)) && (
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     主体起始行（表头行）
@@ -1259,28 +1264,28 @@ export default function RuleEditor({ rule, onClose, onSaveComplete, mode = 'crea
                     <input
                       type="number"
                       min="1"
-                      max={rawFileData.length}
+                      max={mode === 'create' ? rawFileData.length : undefined}
                       value={manualHeaderRow || ''}
                       onChange={(e) => {
                         const value = parseInt(e.target.value) || null;
                         setManualHeaderRow(value);
-                        // 不再立即重新解析，等待用户点击确认
                       }}
                       placeholder="输入行号"
-                      className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 w-28"
+                      className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 w-20"
                     />
                     <button
                       onClick={() => {
-                        // 点击确认后重新解析预览
                         updatePreviewFromData(rawFileData);
                       }}
                       className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md"
                     >
-                      确认
+                      重新解析预览
                     </button>
-                    <span className="text-xs text-gray-500">
-                      当前文件共 {rawFileData.length} 行
-                    </span>
+                    {mode === 'create' && (
+                      <span className="text-xs text-gray-500">
+                        当前文件共 {rawFileData.length} 行
+                      </span>
+                    )}
                   </div>
                 </div>
               )}

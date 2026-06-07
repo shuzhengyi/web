@@ -31,17 +31,67 @@ export async function GET(request: Request) {
       }
     }
 
+    const externalCode = searchParams.get('externalCode') || undefined;
+    const receiverInfo = searchParams.get('receiverInfo') || undefined;
+    const statusParam = searchParams.get('status') || undefined;
+    const createdAtStart = searchParams.get('createdAtStart') || undefined;
+    const createdAtEnd = searchParams.get('createdAtEnd') || undefined;
+
+    // 构建查询条件
+    const where: any = {};
+    if (externalCode) {
+      where.externalCode = { contains: externalCode };
+    }
+    if (receiverInfo) {
+      where.OR = [
+        { storeName: { contains: receiverInfo } },
+        { receiverName: { contains: receiverInfo } },
+        { receiverPhone: { contains: receiverInfo } },
+      ];
+    }
+    if (statusParam) {
+      where.status = statusParam;
+    }
+    if (createdAtStart) {
+      where.createdAt = { ...where.createdAt, gte: new Date(createdAtStart) };
+    }
+    if (createdAtEnd) {
+      // 结束日期包含当天全天
+      const endDate = new Date(createdAtEnd);
+      endDate.setHours(23, 59, 59, 999);
+      where.createdAt = { ...where.createdAt, lte: endDate };
+    }
+
     const [orders, total] = await Promise.all([
       prisma.outboundOrder.findMany({
-        include: { items: true },
+        where,
+        select: {
+          id: true,
+          externalCode: true,
+          storeName: true,
+          receiverName: true,
+          receiverPhone: true,
+          receiverAddress: true,
+          status: true,
+          createdAt: true,
+          _count: {
+            select: { items: true },
+          },
+        },
         orderBy: { createdAt: 'desc' },
         skip,
         take: pageSize,
       }),
-      prisma.outboundOrder.count(),
+      prisma.outboundOrder.count({ where }),
     ]);
 
-    return NextResponse.json({ success: true, orders, total });
+    // 将 _count.items 转换为 items.length 以保持前端兼容
+    const formattedOrders = orders.map(order => ({
+      ...order,
+      items: Array(order._count.items).fill(null).map((_, i) => ({ id: i })),
+    }));
+
+    return NextResponse.json({ success: true, orders: formattedOrders, total });
   } catch (error) {
     console.error('获取出库单失败:', error);
     return NextResponse.json({ success: false, error: '获取出库单失败' }, { status: 500 });

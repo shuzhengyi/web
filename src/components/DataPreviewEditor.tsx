@@ -521,10 +521,8 @@ export default function DataPreviewEditor({
                                   </div>
                                 )}
                                 {hasError && !isEditing && (
-                                  <div className="absolute bottom-full left-0 mb-1 hidden group-hover:block z-30">
-                                    <div className="bg-red-600 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
-                                      {cellErrors.map(e => e.message).join('; ')}
-                                    </div>
+                                  <div className="text-[10px] text-red-600 mt-0.5 leading-tight break-all">
+                                    {cellErrors.map(e => e.message).join('; ')}
                                   </div>
                                 )}
                               </td>
@@ -627,12 +625,10 @@ export default function DataPreviewEditor({
                             )}
                           </div>
                         )}
-                        {/* 错误提示 tooltip */}
+                        {/* 错误提示 */}
                         {hasError && !isEditing && (
-                          <div className="absolute bottom-full left-0 mb-1 hidden group-hover:block z-30">
-                            <div className="bg-red-600 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
-                              {cellErrors.map(e => e.message).join('; ')}
-                            </div>
+                          <div className="text-[10px] text-red-600 mt-0.5 leading-tight break-all">
+                            {cellErrors.map(e => e.message).join('; ')}
                           </div>
                         )}
                       </td>

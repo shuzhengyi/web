@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import mammoth from 'mammoth';
+import { PdfParseEngine, type PdfSections } from './pdf-parse-engine';
 
 // 文件类型
 export type FileType = 'excel' | 'word' | 'pdf';
@@ -245,138 +246,28 @@ export async function parseWord(buffer: Buffer): Promise<FileParseResult> {
  */
 export async function parsePdf(buffer: Buffer): Promise<FileParseResult> {
   try {
-    const { extractText, getDocumentProxy } = await import('unpdf');
-    
-    const pdf = await getDocumentProxy(new Uint8Array(buffer));
-    const { totalPages, text } = await extractText(pdf, { mergePages: true });
+    const engine = new PdfParseEngine();
+    const result = await engine.parse(buffer);
 
-    if (!text || text.trim().length === 0) {
+    if (!result.success || !result.sections) {
       return {
         success: false,
-        error: 'PDF 文件内容为空或无法提取文本',
-        errorType: 'empty',
+        error: result.error || 'PDF 文件解析失败',
+        errorType: 'parse',
       };
     }
 
-    const pages = text.split(/\f/).filter((page: string) => page.trim());
+    const sections = result.sections;
 
-    // 将文本按行分割，每行再按制表符或空格分割
-    const lines = text.split('\n').filter(line => line.trim());
-    const data = lines.map(line => {
-      if (line.includes('\t')) {
-        return line.split('\t').map(cell => cell.trim());
-      } else {
-        return line.split(/\s{2,}/).map(cell => cell.trim());
-      }
-    });
-
-    // 确保所有行的长度一致
-    if (data.length > 0) {
-      const maxLength = Math.max(...data.map(row => row.length));
-      data.forEach(row => {
-        while (row.length < maxLength) {
-          row.push('');
-        }
-      });
-    }
-
-    // 检测表头行（与 Excel 相同的逻辑）
-    let headerRow = 1;
-    let dataStartRow = 2;
-    let dataEndRow = data.length;
-
-    // 找表头行
-    for (let i = 0; i < Math.min(30, data.length); i++) {
-      const row = data[i];
-      let dataColumnCount = 0;
-      for (const cell of row) {
-        const cellStr = String(cell || '').toLowerCase();
-        if (
-          cellStr.includes('编码') || 
-          cellStr.includes('名称') || 
-          cellStr.includes('数量') ||
-          cellStr.includes('规格') ||
-          cellStr.includes('sku')
-        ) {
-          dataColumnCount++;
-        }
-      }
-      if (dataColumnCount >= 2) {
-        headerRow = i + 1;
-        dataStartRow = i + 2;
-        break;
-      }
-    }
-
-    // 找数据结束行
-    for (let i = dataStartRow - 1; i < data.length; i++) {
-      const rowStr = data[i].join(' ');
-      if (rowStr.includes('合计')) {
-        dataEndRow = i;
-        break;
-      }
-    }
-
-    // 分割三部分
-    const headerSection: { [key: string]: string }[] = [];
-    for (let i = 0; i < headerRow - 1; i++) {
-      const row = data[i];
-      if (!row || row.every(cell => !cell)) continue;
-      const rowObj: { [key: string]: string } = {};
-      for (let j = 0; j < row.length - 1; j += 2) {
-        const key = String(row[j] || '').trim();
-        const value = String(row[j + 1] || '').trim();
-        if (key && value) {
-          rowObj[key] = value;
-        }
-      }
-      if (Object.keys(rowObj).length > 0) {
-        headerSection.push(rowObj);
-      }
-    }
-
-    const dataSection = data.slice(headerRow - 1, dataEndRow);
-    const headers = dataSection[0] || [];
-
-    const footerSection: { [key: string]: string }[] = [];
-    for (let i = dataEndRow + 1; i < data.length; i++) {
-      const row = data[i];
-      if (!row || row.every(cell => !cell)) continue;
-      const rowObj: { [key: string]: string } = {};
-      for (let j = 0; j < row.length - 1; j += 2) {
-        const key = String(row[j] || '').trim();
-        const value = String(row[j + 1] || '').trim();
-        if (key && value) {
-          rowObj[key] = value;
-        }
-      }
-      if (Object.keys(rowObj).length > 0) {
-        footerSection.push(rowObj);
-      }
-    }
-
-    // 生成预览
-    const preview = data.slice(0, 15).map(row => 
+    // 生成预览（前 15 行）
+    const preview = sections.dataSection.slice(0, 15).map(row =>
       row.map(cell => String(cell || '')).join('\t')
     ).join('\n');
 
-    const structuredData: PdfStructuredData = {
-      pages,
-      text,
-      headers: headers.map(h => String(h || '').trim()),
-      rows: data,
-      headerSection,
-      dataSection,
-      footerSection,
-      headerRow,
-      dataStartRow,
-      dataEndRow,
-    };
-
     return {
       success: true,
-      content: text,
-      structuredData,
+      content: sections.text,
+      structuredData: sections as PdfStructuredData,
       preview,
     };
   } catch (error) {

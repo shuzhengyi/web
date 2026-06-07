@@ -32,9 +32,37 @@ export default function OutboundTable({
   onRefresh,
 }: OutboundTableProps) {
   const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
+  const [expandedItems, setExpandedItems] = useState<OutboundItem[]>([]);
+  const [itemsLoading, setItemsLoading] = useState(false);
 
   const getStatusInfo = (status: string) => {
     return STATUS_OPTIONS.find(s => s.value === status) || STATUS_OPTIONS[0];
+  };
+
+  // 获取展开行的明细数据
+  const fetchExpandedItems = async (orderId: number) => {
+    setItemsLoading(true);
+    try {
+      const res = await fetch(`/api/outbound-orders/${orderId}`);
+      const data = await res.json();
+      if (data.success) {
+        setExpandedItems(data.order?.items || []);
+      }
+    } catch (error) {
+      console.error('获取明细失败:', error);
+    } finally {
+      setItemsLoading(false);
+    }
+  };
+
+  const handleExpand = async (orderId: number) => {
+    if (expandedOrder === orderId) {
+      setExpandedOrder(null);
+      setExpandedItems([]);
+    } else {
+      setExpandedOrder(orderId);
+      fetchExpandedItems(orderId);
+    }
   };
 
   const handleStatusChange = async (id: number, status: string) => {
@@ -100,7 +128,13 @@ export default function OutboundTable({
                 外部编码
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
-                收货信息
+                收货门店
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
+                收货人
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
+                收货电话
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
                 SKU数量
@@ -119,13 +153,13 @@ export default function OutboundTable({
           <tbody className="divide-y divide-[#e5e7eb]">
             {loading ? (
               <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-[#6b7280]">
+                <td colSpan={9} className="px-6 py-12 text-center text-[#6b7280]">
                   加载中...
                 </td>
               </tr>
             ) : orders.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-[#6b7280]">
+                <td colSpan={9} className="px-6 py-12 text-center text-[#6b7280]">
                   暂无数据
                 </td>
               </tr>
@@ -135,7 +169,7 @@ export default function OutboundTable({
                   <tr className="hover:bg-[#f9fafb] transition-colors">
                     <td className="px-6 py-4">
                       <button
-                        onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
+                        onClick={() => handleExpand(order.id)}
                         className="text-[#9ca3af] hover:text-[#374151] transition-colors"
                       >
                         {expandedOrder === order.id ? '▼' : '▶'}
@@ -145,22 +179,16 @@ export default function OutboundTable({
                       {order.externalCode}
                     </td>
                     <td className="px-6 py-4 text-sm text-[#1f2937]">
-                      {order.storeName ? (
-                        <div>
-                          <div className="font-medium">{order.storeName}</div>
-                        </div>
-                      ) : (
-                        <div>
-                          <div className="font-medium">{order.receiverName || '-'}</div>
-                          <div className="text-[#6b7280]">{order.receiverPhone || ''}</div>
-                          <div className="text-[#6b7280] truncate max-w-xs" title={order.receiverAddress || ''}>
-                            {order.receiverAddress || ''}
-                          </div>
-                        </div>
-                      )}
+                      {order.storeName || '-'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-[#1f2937]">
+                      {order.receiverName || '-'}
                     </td>
                     <td className="px-6 py-4 text-sm text-[#6b7280]">
-                      {order.items.length} 个SKU
+                      {order.receiverPhone || '-'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-[#6b7280]">
+                      {order.items?.length || 0} 个SKU
                     </td>
                     <td className="px-6 py-4">
                       <select
@@ -192,43 +220,47 @@ export default function OutboundTable({
                   </tr>
                   {expandedOrder === order.id && (
                     <tr>
-                      <td colSpan={7} className="px-6 py-0">
+                      <td colSpan={9} className="px-6 py-0">
                         <div className="border-t border-[#e5e7eb] bg-[#f9fafb] py-4">
                           <h4 className="text-sm font-medium text-[#1f2937] mb-3">SKU明细</h4>
-                          <div className="overflow-x-auto">
-                            <table className="min-w-full text-sm">
-                              <thead className="bg-white">
-                                <tr>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
-                                    SKU编码
-                                  </th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
-                                    SKU名称
-                                  </th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
-                                    规格
-                                  </th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
-                                    数量
-                                  </th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
-                                    备注
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-[#e5e7eb]">
-                                {order.items.map((item) => (
-                                  <tr key={item.id}>
-                                    <td className="px-4 py-2 text-[#1f2937]">{item.skuCode}</td>
-                                    <td className="px-4 py-2 text-[#1f2937]">{item.skuName}</td>
-                                    <td className="px-4 py-2 text-[#6b7280]">{item.specification || '-'}</td>
-                                    <td className="px-4 py-2 text-[#1f2937] font-medium">{item.quantity}</td>
-                                    <td className="px-4 py-2 text-[#6b7280]">{item.remark || '-'}</td>
+                          {itemsLoading ? (
+                            <div className="text-center text-sm text-[#6b7280] py-4">加载中...</div>
+                          ) : (
+                            <div className="overflow-x-auto">
+                              <table className="min-w-full text-sm">
+                                <thead className="bg-white">
+                                  <tr>
+                                    <th className="px-4 py-2 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
+                                      SKU编码
+                                    </th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
+                                      SKU名称
+                                    </th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
+                                      规格
+                                    </th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
+                                      数量
+                                    </th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium text-[#6b7280] uppercase tracking-wider">
+                                      备注
+                                    </th>
                                   </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
+                                </thead>
+                                <tbody className="divide-y divide-[#e5e7eb]">
+                                  {expandedItems.map((item) => (
+                                    <tr key={item.id}>
+                                      <td className="px-4 py-2 text-[#1f2937]">{item.skuCode}</td>
+                                      <td className="px-4 py-2 text-[#1f2937]">{item.skuName}</td>
+                                      <td className="px-4 py-2 text-[#6b7280]">{item.specification || '-'}</td>
+                                      <td className="px-4 py-2 text-[#1f2937] font-medium">{item.quantity}</td>
+                                      <td className="px-4 py-2 text-[#6b7280]">{item.remark || '-'}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
                         </div>
                       </td>
                     </tr>
